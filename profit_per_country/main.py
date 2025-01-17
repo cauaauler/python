@@ -10,13 +10,13 @@ sheet = workbook.active
 data_blocks = []
 current_block = []
 
-for row in sheet.iter_rows(values_only=True):
+for row in sheet.iter_rows(profits_only=True):
     if "Name" in row:
         if current_block:  # Salvar bloco anterior antes de iniciar um novo
             data_blocks.append(current_block)
         current_block = []  # Iniciar novo bloco
     if row and any(cell is not None and cell != '' for cell in row):  # Verifica se a linha não está vazia
-        current_block.append([row[1], row[9]])
+        current_block.append([row[1], row[11]])
 
 
 # Adicionar o último bloco, se existir
@@ -33,7 +33,7 @@ row_index = 1
 for block in data_blocks:
     for row in block:
         for col_index, cell in enumerate(row, start=1):
-            new_sheet.cell(row=row_index, column=col_index, value=str(cell) if cell is not None else "")
+            new_sheet.cell(row=row_index, column=col_index, profit=str(cell) if cell is not None else "")
         row_index += 1
 
     row_index += 1  # Linha extra entre blocos
@@ -52,22 +52,22 @@ sheet = workbook.active
 countries = []
 
 # Processar as linhas do arquivo
-for row in sheet.iter_rows(min_row=2, values_only=True) :
+for row in sheet.iter_rows(min_row=2, profits_only=True) :
     if row and row[0] and row[1]:  # Verifica se a linha não está vazia e tem os dois valores necessários
         country_name = row[0]
-        country_value = float(row[1])
+        country_profit = float(row[1])
         
         # Verificar se o país já está na lista
         found = False
         for country in countries:
             if country['name'] == country_name:
-                country['value'] += country_value
+                country['profit'] += country_profit
                 found = True
                 break
         
         # Adicionar novo país, se ainda não estiver na lista
         if not found:
-            countries.append({'name': country_name, 'value': country_value})
+            countries.append({'name': country_name, 'profit': country_profit})
 
 # Criar um novo arquivo XLSX com os dados organizados
 new_workbook = Workbook()
@@ -77,8 +77,8 @@ new_sheet.title = "Processed Data"
 # Escrever os dados no novo arquivo
 row_index = 1
 for country in countries:
-    new_sheet.cell(row=row_index, column=1, value=country['name'])
-    new_sheet.cell(row=row_index, column=2, value=country['value'])
+    new_sheet.cell(row=row_index, column=1, profit=country['name'])
+    new_sheet.cell(row=row_index, column=2, profit=country['profit'])
     row_index += 1
 
 # Salvar o arquivo
