@@ -1,48 +1,34 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from faker import Faker
-from selenium.webdriver.edge.options import Options
-from selenium.webdriver.edge.service import Service
+import pyautogui
+import os
 import time
+import random
+import nltk
 
-# Initialize Faker for Portuguese data
-fake = Faker("pt_BR")
+# Baixa a lista de palavras do dicionário (só precisa rodar uma vez)
+nltk.download("words")
 
-# Specify the path to your msedgedriver executable
-driver_path = r"C:\Users\cauaa\Downloads\edgedriver_win64\msedgedriver.exe"
+from nltk.corpus import words
 
-# Create the EdgeDriver service
-service = Service(driver_path)
+# Filtra apenas palavras em português (ou próximas)
+palavras_reais = [palavra.lower() for palavra in words.words() if palavra.isalpha() and len(palavra) > 2]
 
-# Configure Edge options for headless mode and reduce logging
-options = Options()
-options.use_chromium = True  # Important for Chromium-based Edge
-# options.add_argument("--headless")
-options.add_experimental_option("excludeSwitches", ["enable-logging"])
+# Abre o Microsoft Edge no Bing
+os.system("start msedge https://www.bing.com/")
+time.sleep(5)  # Espera o navegador carregar
 
-# Initialize the Edge WebDriver with the service and options
-driver = webdriver.Edge(service=service, options=options)
-
-# Generate a random word
-palavra = fake.word()
-
-# Open Google
-driver.get("https://www.bing.com/")
-
-# Find the search bar and input the random word
 x = 0
-while(x < 60):
-    time.sleep(10)
-    barra_pesquisa = driver.find_element("id", "sb_form_q")
-    barra_pesquisa.send_keys(palavra)
+while x < 30:  # Executa 30 buscas
+    time.sleep(3)  # Pequeno delay entre buscas
+
+    # Escolhe uma palavra real aleatória
+    palavra = random.choice(palavras_reais)
+
+    # Seleciona a barra de pesquisa (atalho universal para maioria dos navegadores)
+    pyautogui.hotkey('ctrl', 'l')  
     time.sleep(1)
-    barra_pesquisa.send_keys(Keys.ENTER)
-    x += 1
-    break
 
+    # Digita a palavra real e pressiona Enter
+    pyautogui.write(palavra, interval=0.1)
+    pyautogui.press("enter")
 
-# Wait for results to load
-time.sleep(5)
-
-# Close the browser
-# driver.quit()
+    x += 1  # Incrementa o contador
