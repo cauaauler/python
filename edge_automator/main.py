@@ -4,31 +4,27 @@ import time
 import random
 import nltk
 
-# Baixa a lista de palavras do dicionário (só precisa rodar uma vez)
-nltk.download("words")
+# Baixa o corpus Floresta
+nltk.download("floresta")
 
-from nltk.corpus import words
+from nltk.corpus import floresta
 
-# Filtra apenas palavras em português (ou próximas)
-palavras_reais = [palavra.lower() for palavra in words.words() if palavra.isalpha() and len(palavra) > 2]
+# Obtém palavras únicas do corpus (remoção de duplicatas)
+palavras_portugues = list(set([word.lower() for word in floresta.words() if word.isalpha()]))
 
 # Abre o Microsoft Edge no Bing
 os.system("start msedge https://www.bing.com/")
-time.sleep(5)  # Espera o navegador carregar
+time.sleep(5)
 
-x = 0
-while x < 30:  # Executa 30 buscas
-    time.sleep(3)  # Pequeno delay entre buscas
+for _ in range(30):
+    time.sleep(3)
 
-    # Escolhe uma palavra real aleatória
-    palavra = random.choice(palavras_reais)
+    palavra = random.choice(palavras_portugues)
+    palavra2 = random.choice(palavras_portugues)
+    palavra3 = random.choice(palavras_portugues)
 
-    # Seleciona a barra de pesquisa (atalho universal para maioria dos navegadores)
     pyautogui.hotkey('ctrl', 'l')  
     time.sleep(1)
 
-    # Digita a palavra real e pressiona Enter
-    pyautogui.write(palavra, interval=0.1)
+    pyautogui.write(palavra + " " + palavra2 + " " + palavra3, interval=0.1)
     pyautogui.press("enter")
-
-    x += 1  # Incrementa o contador
